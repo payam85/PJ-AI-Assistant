@@ -1,1 +1,4 @@
-print("Hello PJ")
+openai-agents==0.18.3
+openai==2.48.0
+pydantic==2.13.4
+python-dotenv==1.2.2
