@@ -3,22 +3,85 @@
 One local SQLite database for LinkedIn drafts, imported contacts, CV evidence,
 job-search drafts, application notes and API usage. UK, UAE/Dubai, Oman, Qatar and Kuwait.
 
-## Run on this Mac
+## Try the offline demo first
 
-`./run.sh serve` opens the service at http://127.0.0.1:8421 (loopback only).
-Open that address in your browser. The launcher reuses the existing ignored credential
-file and installed SDK runtime; it never copies or prints the key.
+The demo uses fictional data, makes **zero API calls**, and needs only Python 3.11+.
 
-Other commands: `./run.sh status`, `./run.sh daily`, `./run.sh import-history`,
-`./run.sh generate linkedin 'A specific topic'`, `./run.sh reset-api`.
-Reset the API circuit only after resolving the reported credit or authentication issue.
+```bash
+git clone https://github.com/payam85/PJ-AI-Assistant.git
+cd PJ-AI-Assistant
+python3 demo.py
+```
 
-## Portable setup
+Open `private/demo.html` in your browser. On Windows use `py` instead of `python3`.
+The demo illustrates the workflow with fixed examples; it is not a live AI test.
 
-Python 3.11+; create a virtual environment and install `requirements.txt`.
-Set `OPENAI_API_KEY` securely or set `PJ_ENV_FILE` to an ignored existing env file.
-Run `python app.py serve`. `Main.py` is a compatibility entry point; do not create
-a separate lowercase `main.py` on a case-insensitive Mac filesystem.
+## Install the full application
+
+### macOS or Linux
+
+From the downloaded project folder:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+cp .env.example .env
+```
+
+### Windows PowerShell
+
+```powershell
+py -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+Copy-Item .env.example .env
+```
+
+Open `.env` in a local text editor and set `OPENAI_API_KEY` to **your own** key.
+Do not share it or commit it. An API account with model access and available credit is
+required for real generation. The repository contains no usable key or personal profile.
+
+On macOS/Linux, with the virtual environment active:
+
+```bash
+python doctor.py
+python -m unittest discover -s tests -v
+python app.py serve
+```
+
+On Windows, use `.\.venv\Scripts\python.exe` instead of `python` in these commands.
+Open http://127.0.0.1:8421 in your browser and keep the terminal running.
+Paste your own CV and work-authorisation details into **Your evidence**, then save.
+Choose `linkedin` and enter a topic to test one real generation. A successful draft is
+saved in **Your work**; submitting the identical request again reuses it.
+
+For CV tailoring or fit analysis, paste the vacancy text into the request field.
+The API call limit defaults to six attempts a day. Real generation may incur charges.
+
+## Commands and scheduling
+
+`python app.py status`, `python app.py daily`, `python app.py import-history`,
+`python app.py generate linkedin 'A specific topic'`, `python app.py reset-api`.
+Reset the API circuit only after resolving credit or authentication problems.
+
+`daily` prepares job leads and one LinkedIn draft before 17:00 London time, and one
+LinkedIn draft after 17:00. It runs once and exits; it is **not a background scheduler**.
+Configure your own scheduler if needed. The author's Work automations are not distributed
+with this repository. Failed daily slots are retained to prevent repeated billed attempts.
+
+`./run.sh serve` is an optional Mac/Linux launcher. It uses `.venv` when available;
+private/runtime.json can override local runtime and credential-file locations.
+No machine-specific configuration is required for a fresh installation.
+
+## Troubleshooting
+
+- Missing module: activate the virtual environment and install `requirements.txt`.
+- Missing key: save your key in `.env` at the project root; restart the app.
+- `insufficient_quota`: check API billing/credit, then run `python app.py reset-api`.
+- Connection failure: check the machine's network and execution permissions.
+- Port already in use: run `python app.py serve --port 8422` and open that port.
+- A run remains “running” after a crash: inspect provider activity before clearing it;
+  automatic replay is deliberately disabled. There is no self-service recovery UI yet.
 
 ## Lower usage
 
@@ -67,3 +130,12 @@ Tests use isolated temporary databases and do not spend API credits.
 
 SDK references: https://developers.openai.com/api/docs/guides/agents
 and https://openai.github.io/openai-agents-python/running_agents/.
+
+## Readiness and licence
+
+This is an early local prototype, not a hosted service. Automated tests cover local
+behaviour; successful live API generation, fresh dependency downloads on every platform,
+and end-to-end job-search quality are not yet verified. See the boundaries above.
+
+Released under the [MIT License](LICENSE). Each user supplies their own credentials,
+profile and scheduling. Third-party services retain their own terms and charges.
